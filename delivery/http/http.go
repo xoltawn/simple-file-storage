@@ -1,8 +1,9 @@
 package http
 
 import (
+	"bytes"
 	"fmt"
-	"log"
+	"io"
 	"net/http"
 
 	"github.com/uptrace/bunrouter"
@@ -44,19 +45,31 @@ func (h *fileHTTPHandler) storeFromFileHandler(w http.ResponseWriter, req bunrou
 	}
 
 	//check if the text file containing links is sent and get file content
-	err = req.Request.ParseMultipartForm(h.maxFileSizeMB * 1024 * 1024)
+	err = req.ParseMultipartForm(h.maxFileSizeMB * 1024 * 1024)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return bunrouter.JSON(w, "error reading file")
 	}
 
-	_, _, err = req.Request.FormFile("text_file")
+	multipartFile, _, err := req.Request.FormFile("text_file")
+	defer multipartFile.Close()
 	if err != nil {
-		log.Println(err)
 		if err.Error() == "multipart: NextPart: EOF" {
 			w.WriteHeader(http.StatusBadRequest)
 			return bunrouter.JSON(w, "text_file is not specified")
 		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
+	}
+
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, multipartFile); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
+	}
+
+	err = h.fileUsecase.DownloadFromTextFile(req.Context(), buf.Bytes())
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return bunrouter.JSON(w, "internal server error")
 	}
