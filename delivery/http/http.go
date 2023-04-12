@@ -143,10 +143,12 @@ func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter
 		return bunrouter.JSON(w, "internal server error")
 	}
 
-	_, err = h.fileUsecase.UploadFile(req.Context(), buf.Bytes())
+	uploadedFile, err := h.fileUsecase.UploadFile(req.Context(), buf.Bytes())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return bunrouter.JSON(w, "internal server error")
 	}
-	return
+
+	w.WriteHeader(http.StatusOK)
+	return bunrouter.JSON(w, uploadedFile)
 }

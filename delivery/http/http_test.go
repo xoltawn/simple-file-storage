@@ -218,4 +218,36 @@ func TestUploadFile(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	})
 
+	t.Run("if no err occures, it throws 200 error and responses back the uploaded file info", func(t *testing.T) {
+		//arrange
+		expFile := domain.File{
+			OriginalUrl:   "OriginalUrl1",
+			LocalName:     "LocalName1",
+			FileExtension: "FileExtension1",
+			FileSize:      1,
+			CreatedAt:     "CreatedAt1",
+		}
+		fileUsecase := _mocks.NewMockFileUsecase(ctrl)
+		fileUsecase.EXPECT().UploadFile(context.TODO(), gomock.Any()).Return(expFile, nil)
+
+		bunrouter := bunrouter.New()
+		rec := httptest.NewRecorder()
+		writer, req, err := _http.NewFileUploadRequest(route, nil, "file", "../../storage/sample-links.txt")
+		assert.NoError(t, err)
+		req.Header.Add("Content-Type", writer.FormDataContentType())
+
+		_http.NewFileHTTPHandler(bunrouter, fileUsecase, maxFileSize)
+
+		//act
+		bunrouter.ServeHTTP(rec, req)
+
+		//assert
+		assert.Equal(t, http.StatusOK, rec.Code)
+		wantResp, err := json.Marshal(expFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		assert.Contains(t, rec.Body.String(), string(wantResp))
+	})
+
 }
