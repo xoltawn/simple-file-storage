@@ -129,4 +129,30 @@ func TestUploadFile(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, uploadedFile, domain.File{})
 	})
+
+	t.Run("if no err occurs in fcs client, newly updated will be returned", func(t *testing.T) {
+		//arrange
+		fileBytes := []byte(gomock.Any().String())
+		pbFile := &_filepb.File{}
+		fscRes := &_filepb.UploadFileResponse{
+			File: pbFile,
+		}
+		fscReq := &_filepb.UploadFileRequest{
+			File: fileBytes,
+		}
+
+		expFile := domain.File{}
+		expFile.FromGRPCFile(pbFile)
+
+		fileClient := _grpcmocks.NewMockFileServiceClient(ctrl)
+		fileClient.EXPECT().UploadFile(context.TODO(), fscReq).Return(fscRes, nil)
+
+		//act
+		sut := _grpc.NewFileGRPCRepository(fileClient)
+		uploadedFile, err := sut.UploadFile(context.TODO(), fileBytes)
+
+		//assert
+		assert.NoError(t, err)
+		assert.Equal(t, uploadedFile, expFile)
+	})
 }
