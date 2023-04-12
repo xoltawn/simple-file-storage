@@ -29,8 +29,14 @@ func NewFileHTTPHandler(router *bunrouter.Router) {
 }
 
 func (h *fileHTTPHandler) storeFromFileHandler(w http.ResponseWriter, req bunrouter.Request) (err error) {
+
+	if ok := HasContentType(req.Request, "multipart/form-data"); !ok {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return bunrouter.JSON(w, "unaccepted content type")
+	}
+
 	//check if the text file containing links is sent and get file content
-	_, _, err = req.FormFile("text_file")
+	_, _, err = req.Request.FormFile("text_file")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return bunrouter.JSON(w, "text_file is not specified")
