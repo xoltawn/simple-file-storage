@@ -162,6 +162,7 @@ func TestFetchFiles(t *testing.T) {
 func TestUploadFile(t *testing.T) {
 	route := fmt.Sprint(_http.ApiPath, _http.V1Path, _http.FilesPath)
 	defaultContentType := fmt.Sprint("multipart/form-data; boundary=\"bounsdary\"")
+	ctrl := gomock.NewController(t)
 
 	t.Run("if request content type is not multipart, it throws 415 error", func(t *testing.T) {
 		//arrange
@@ -193,6 +194,28 @@ func TestUploadFile(t *testing.T) {
 
 		//assert
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
+	})
+
+	t.Run("if err occures in usecase, it throws 500 error", func(t *testing.T) {
+		//arrange
+		fileUsecase := _mocks.NewMockFileUsecase(ctrl)
+		expErr := sampleErr
+		expFile := domain.File{}
+		fileUsecase.EXPECT().UploadFile(context.TODO(), gomock.Any()).Return(expFile, expErr)
+
+		bunrouter := bunrouter.New()
+		rec := httptest.NewRecorder()
+		writer, req, err := _http.NewFileUploadRequest(route, nil, "file", "../../storage/sample-links.txt")
+		assert.NoError(t, err)
+		req.Header.Add("Content-Type", writer.FormDataContentType())
+
+		_http.NewFileHTTPHandler(bunrouter, fileUsecase, maxFileSize)
+
+		//act
+		bunrouter.ServeHTTP(rec, req)
+
+		//assert
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	})
 
 }

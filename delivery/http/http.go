@@ -126,7 +126,8 @@ func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter
 		return bunrouter.JSON(w, "error reading file")
 	}
 
-	_, _, err = req.Request.FormFile("text_file")
+	multipartFile, _, err := req.Request.FormFile("file")
+	defer multipartFile.Close()
 	if err != nil {
 		if err.Error() == "multipart: NextPart: EOF" {
 			w.WriteHeader(http.StatusBadRequest)
@@ -136,5 +137,16 @@ func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter
 		return bunrouter.JSON(w, "internal server error")
 	}
 
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, multipartFile); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
+	}
+
+	_, err = h.fileUsecase.UploadFile(req.Context(), buf.Bytes())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
+	}
 	return
 }
