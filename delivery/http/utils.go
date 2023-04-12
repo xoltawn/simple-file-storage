@@ -14,10 +14,6 @@ func NewFileUploadRequest(uri string, params map[string]string, paramName, path 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 
-	for key, val := range params {
-		_ = writer.WriteField(key, val)
-	}
-
 	if paramName != "" && path != "" {
 		file, err := os.Open(path)
 		if err != nil {
@@ -42,7 +38,9 @@ func NewFileUploadRequest(uri string, params map[string]string, paramName, path 
 			return nil, nil, err
 		}
 	}
-
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
 	err := writer.Close()
 	if err != nil {
 		return nil, nil, err

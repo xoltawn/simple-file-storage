@@ -12,6 +12,10 @@ import (
 	_http "github.com/xoltawn/simple-file-storage/delivery/http"
 )
 
+const (
+	maxFileSize = 5
+)
+
 func TestStoreFromFileHandler(t *testing.T) {
 	route := fmt.Sprint(_http.ApiPath, _http.V1Path, _http.FilesPath, _http.StoreFromFilePath)
 
@@ -22,7 +26,7 @@ func TestStoreFromFileHandler(t *testing.T) {
 		_, req, err := _http.NewFileUploadRequest(route, nil, "", "")
 		assert.NoError(t, err)
 
-		_http.NewFileHTTPHandler(bunrouter)
+		_http.NewFileHTTPHandler(bunrouter, nil, maxFileSize)
 
 		//act
 		bunrouter.ServeHTTP(rec, req)
@@ -36,8 +40,9 @@ func TestStoreFromFileHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 		_, req, err := _http.NewFileUploadRequest(route, nil, "", "")
 		assert.NoError(t, err)
-		req.Header.Add("Content-Type", fmt.Sprint("multipart/form-data; boundary=", "boundary", '"'))
-		_http.NewFileHTTPHandler(bunrouter)
+		contentType := fmt.Sprint("multipart/form-data; boundary=\"bounsdary\"")
+		req.Header.Add("Content-Type", contentType)
+		_http.NewFileHTTPHandler(bunrouter, nil, maxFileSize)
 
 		//act
 		bunrouter.ServeHTTP(rec, req)
