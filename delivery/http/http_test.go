@@ -158,3 +158,23 @@ func TestFetchFiles(t *testing.T) {
 		assert.Contains(t, rec.Body.String(), string(wantResp))
 	})
 }
+
+func TestUploadFile(t *testing.T) {
+	route := fmt.Sprint(_http.ApiPath, _http.V1Path, _http.FilesPath)
+
+	t.Run("if request content type is not multipart, it throws 415 error", func(t *testing.T) {
+		//arrange
+		bunrouter := bunrouter.New()
+		rec := httptest.NewRecorder()
+		_, req, err := _http.NewFileUploadRequest(route, nil, "", "")
+		assert.NoError(t, err)
+
+		_http.NewFileHTTPHandler(bunrouter, nil, maxFileSize)
+
+		//act
+		bunrouter.ServeHTTP(rec, req)
+
+		//assert
+		assert.Equal(t, http.StatusUnsupportedMediaType, rec.Code)
+	})
+}

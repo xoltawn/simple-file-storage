@@ -35,6 +35,8 @@ func NewFileHTTPHandler(router *bunrouter.Router, fileUsecase domain.FileUsecase
 				filesrouter.POST(fmt.Sprint(StoreFromFilePath), fileHander.storeFromFileHandler)
 				// /api/v1/files
 				filesrouter.GET("", fileHander.fetchFilesHandler)
+				// /api/v1/files
+				filesrouter.POST("", fileHander.uploadFileHandler)
 			})
 		})
 	})
@@ -109,4 +111,14 @@ func (h *fileHTTPHandler) fetchFilesHandler(w http.ResponseWriter, req bunrouter
 
 	w.WriteHeader(http.StatusOK)
 	return bunrouter.JSON(w, files)
+}
+
+func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter.Request) (err error) {
+	//check content type
+	if ok := HasContentType(req.Request, "multipart/form-data"); !ok {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return bunrouter.JSON(w, "unaccepted content type")
+	}
+
+	return
 }
