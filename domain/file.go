@@ -8,7 +8,7 @@ type File struct {
 	LocalName     string `json:"local_name"`
 	FileExtension string `json:"file_extension"`
 	FileSize      int64  `json:"file_size"`
-	DownloadDate  string `json:"download_date"`
+	CreatedAt     string `json:"created_at"`
 }
 
 // FileRepository provides an interface regarding operations in the Repository later(CRUD)

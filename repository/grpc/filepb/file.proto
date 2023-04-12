@@ -10,7 +10,7 @@ message File {
     string local_name = 2;
     string file_extension = 3;
     int64 file_size = 4;
-    string download_date = 5;
+    string created_at = 5;
 }
 
 message DownloadFromTextFileRequest {

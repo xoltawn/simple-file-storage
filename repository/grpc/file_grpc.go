@@ -38,7 +38,7 @@ func (f *fileGRPC) FetchFiles(ctx context.Context, limit, offset int) (files []d
 			LocalName:     f.LocalName,
 			FileExtension: f.FileExtension,
 			FileSize:      f.FileSize,
-			DownloadDate:  f.DownloadDate,
+			CreatedAt:     f.CreatedAt,
 		})
 	}
 	return
