@@ -36,8 +36,7 @@ func TestStoreFromFileHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 		_, req, err := _http.NewFileUploadRequest(route, nil, "", "")
 		assert.NoError(t, err)
-		req.Header.Add("Content-Type", "multipart/form-data")
-
+		req.Header.Add("Content-Type", fmt.Sprint("multipart/form-data; boundary=", "boundary", '"'))
 		_http.NewFileHTTPHandler(bunrouter)
 
 		//act
