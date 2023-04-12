@@ -32,14 +32,25 @@ func (f *fileGRPC) FetchFiles(ctx context.Context, limit, offset int) (files []d
 		Offset: 0,
 	}
 	res, err := f.fileServiceClient.FetchFiles(ctx, req)
-	for _, f := range res.Files {
-		files = append(files, domain.File{
-			OriginalUrl:   f.OriginalUrl,
-			LocalName:     f.LocalName,
-			FileExtension: f.FileExtension,
-			FileSize:      f.FileSize,
-			CreatedAt:     f.CreatedAt,
-		})
+	if err != nil {
+		return
 	}
+
+	for _, f := range res.Files {
+		resFile := &domain.File{}
+		files = append(files, *resFile.FromGRPCFile(f))
+	}
+	return
+}
+
+func (f *fileGRPC) UploadFile(ctx context.Context, file []byte) (uploadedFile domain.File, err error) {
+	res, err := f.fileServiceClient.UploadFile(ctx, &_filepb.UploadFileRequest{
+		File: file,
+	})
+	if err != nil {
+		return
+	}
+
+	uploadedFile.FromGRPCFile(res.File)
 	return
 }

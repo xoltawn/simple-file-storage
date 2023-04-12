@@ -30,7 +30,17 @@ message FetchFilesResponse {
 }
 
 
+message UploadFileRequest {
+    bytes file = 1;
+}
+
+message UploadFileResponse {
+    File file = 1;
+}
+
+
 service FileService{
     rpc DownloadFromTextFile(DownloadFromTextFileRequest) returns (DownloadFromTextFileResponse){};
     rpc FetchFiles(FetchFilesRequest) returns (FetchFilesResponse){};
+    rpc UploadFile(UploadFileRequest) returns (UploadFileResponse){};
 }

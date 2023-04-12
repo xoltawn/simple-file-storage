@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/xoltawn/simple-file-storage/domain"
 	_grpc "github.com/xoltawn/simple-file-storage/repository/grpc"
 	_filepb "github.com/xoltawn/simple-file-storage/repository/grpc/filepb"
 	_grpcmocks "github.com/xoltawn/simple-file-storage/repository/grpc/mocks"
@@ -108,5 +109,24 @@ func TestFetchFiles(t *testing.T) {
 			assert.Equal(t, file.FileSize, fcsFiles[i].FileSize)
 			assert.Equal(t, file.CreatedAt, fcsFiles[i].CreatedAt)
 		}
+	})
+}
+
+func TestUploadFile(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	t.Run("if err occurs in fcs client, the err will be returned with empty File object", func(t *testing.T) {
+		//arrange
+		fscRes := &_filepb.UploadFileResponse{}
+		fileClient := _grpcmocks.NewMockFileServiceClient(ctrl)
+		expErr := sampleRPCErr
+		fileClient.EXPECT().UploadFile(context.TODO(), gomock.Any()).Return(fscRes, expErr)
+
+		//act
+		sut := _grpc.NewFileGRPCRepository(fileClient)
+		uploadedFile, err := sut.UploadFile(context.TODO(), []byte(gomock.Any().String()))
+
+		//assert
+		assert.Error(t, err)
+		assert.Equal(t, uploadedFile, domain.File{})
 	})
 }

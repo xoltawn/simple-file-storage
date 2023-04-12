@@ -63,3 +63,18 @@ func (mr *MockFileRepositoryMockRecorder) FetchFiles(arg0, arg1, arg2 interface{
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchFiles", reflect.TypeOf((*MockFileRepository)(nil).FetchFiles), arg0, arg1, arg2)
 }
+
+// UploadFile mocks base method.
+func (m *MockFileRepository) UploadFile(arg0 context.Context, arg1 []byte) (domain.File, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UploadFile", arg0, arg1)
+	ret0, _ := ret[0].(domain.File)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UploadFile indicates an expected call of UploadFile.
+func (mr *MockFileRepositoryMockRecorder) UploadFile(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UploadFile", reflect.TypeOf((*MockFileRepository)(nil).UploadFile), arg0, arg1)
+}
