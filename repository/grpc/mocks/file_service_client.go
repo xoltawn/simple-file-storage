@@ -56,6 +56,26 @@ func (mr *MockFileServiceClientMockRecorder) DownloadFromTextFile(ctx, in interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownloadFromTextFile", reflect.TypeOf((*MockFileServiceClient)(nil).DownloadFromTextFile), varargs...)
 }
 
+// FetchFiles mocks base method.
+func (m *MockFileServiceClient) FetchFiles(ctx context.Context, in *filepb.FetchFilesRequest, opts ...grpc.CallOption) (*filepb.FetchFilesResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FetchFiles", varargs...)
+	ret0, _ := ret[0].(*filepb.FetchFilesResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchFiles indicates an expected call of FetchFiles.
+func (mr *MockFileServiceClientMockRecorder) FetchFiles(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchFiles", reflect.TypeOf((*MockFileServiceClient)(nil).FetchFiles), varargs...)
+}
+
 // MockFileServiceServer is a mock of FileServiceServer interface.
 type MockFileServiceServer struct {
 	ctrl     *gomock.Controller
@@ -92,6 +112,21 @@ func (m *MockFileServiceServer) DownloadFromTextFile(arg0 context.Context, arg1 
 func (mr *MockFileServiceServerMockRecorder) DownloadFromTextFile(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownloadFromTextFile", reflect.TypeOf((*MockFileServiceServer)(nil).DownloadFromTextFile), arg0, arg1)
+}
+
+// FetchFiles mocks base method.
+func (m *MockFileServiceServer) FetchFiles(arg0 context.Context, arg1 *filepb.FetchFilesRequest) (*filepb.FetchFilesResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchFiles", arg0, arg1)
+	ret0, _ := ret[0].(*filepb.FetchFilesResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchFiles indicates an expected call of FetchFiles.
+func (mr *MockFileServiceServerMockRecorder) FetchFiles(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchFiles", reflect.TypeOf((*MockFileServiceServer)(nil).FetchFiles), arg0, arg1)
 }
 
 // MockUnsafeFileServiceServer is a mock of UnsafeFileServiceServer interface.

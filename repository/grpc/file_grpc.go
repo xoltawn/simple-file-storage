@@ -24,3 +24,7 @@ func (f *fileGRPC) DownloadFromTextFile(ctx context.Context, links []byte) (err 
 	_, err = f.fileServiceClient.DownloadFromTextFile(ctx, req)
 	return
 }
+
+func (f *fileGRPC) FetchFiles(ctx context.Context, limit, offset int) (err error) {
+	return
+}

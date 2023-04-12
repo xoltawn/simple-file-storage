@@ -47,3 +47,17 @@ func (mr *MockFileRepositoryMockRecorder) DownloadFromTextFile(arg0, arg1 interf
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownloadFromTextFile", reflect.TypeOf((*MockFileRepository)(nil).DownloadFromTextFile), arg0, arg1)
 }
+
+// FetchFiles mocks base method.
+func (m *MockFileRepository) FetchFiles(arg0 context.Context, arg1, arg2 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchFiles", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// FetchFiles indicates an expected call of FetchFiles.
+func (mr *MockFileRepositoryMockRecorder) FetchFiles(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchFiles", reflect.TypeOf((*MockFileRepository)(nil).FetchFiles), arg0, arg1, arg2)
+}

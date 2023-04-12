@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FileServiceClient interface {
 	DownloadFromTextFile(ctx context.Context, in *DownloadFromTextFileRequest, opts ...grpc.CallOption) (*DownloadFromTextFileResponse, error)
+	FetchFiles(ctx context.Context, in *FetchFilesRequest, opts ...grpc.CallOption) (*FetchFilesResponse, error)
 }
 
 type fileServiceClient struct {
@@ -38,11 +39,21 @@ func (c *fileServiceClient) DownloadFromTextFile(ctx context.Context, in *Downlo
 	return out, nil
 }
 
+func (c *fileServiceClient) FetchFiles(ctx context.Context, in *FetchFilesRequest, opts ...grpc.CallOption) (*FetchFilesResponse, error) {
+	out := new(FetchFilesResponse)
+	err := c.cc.Invoke(ctx, "/file.FileService/FetchFiles", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FileServiceServer is the server API for FileService service.
 // All implementations should embed UnimplementedFileServiceServer
 // for forward compatibility
 type FileServiceServer interface {
 	DownloadFromTextFile(context.Context, *DownloadFromTextFileRequest) (*DownloadFromTextFileResponse, error)
+	FetchFiles(context.Context, *FetchFilesRequest) (*FetchFilesResponse, error)
 }
 
 // UnimplementedFileServiceServer should be embedded to have forward compatible implementations.
@@ -51,6 +62,9 @@ type UnimplementedFileServiceServer struct {
 
 func (UnimplementedFileServiceServer) DownloadFromTextFile(context.Context, *DownloadFromTextFileRequest) (*DownloadFromTextFileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadFromTextFile not implemented")
+}
+func (UnimplementedFileServiceServer) FetchFiles(context.Context, *FetchFilesRequest) (*FetchFilesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchFiles not implemented")
 }
 
 // UnsafeFileServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -82,6 +96,24 @@ func _FileService_DownloadFromTextFile_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FileService_FetchFiles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchFilesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileServiceServer).FetchFiles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/file.FileService/FetchFiles",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileServiceServer).FetchFiles(ctx, req.(*FetchFilesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FileService_ServiceDesc is the grpc.ServiceDesc for FileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -92,6 +124,10 @@ var FileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DownloadFromTextFile",
 			Handler:    _FileService_DownloadFromTextFile_Handler,
+		},
+		{
+			MethodName: "FetchFiles",
+			Handler:    _FileService_FetchFiles_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
