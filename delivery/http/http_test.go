@@ -13,11 +13,16 @@ import (
 
 	"github.com/uptrace/bunrouter"
 	_http "github.com/xoltawn/simple-file-storage/delivery/http"
+	"github.com/xoltawn/simple-file-storage/domain"
 	_mocks "github.com/xoltawn/simple-file-storage/domain/mocks"
 )
 
 const (
 	maxFileSize = 5
+)
+
+var (
+	sampleErr = errors.New("sample error")
 )
 
 func TestStoreFromFileHandler(t *testing.T) {
@@ -59,7 +64,7 @@ func TestStoreFromFileHandler(t *testing.T) {
 	t.Run("if err occures in file service client, it throws 500 error", func(t *testing.T) {
 		//arrange
 		fileUsecase := _mocks.NewMockFileUsecase(ctrl)
-		expErr := errors.New("sample error")
+		expErr := sampleErr
 		fileUsecase.EXPECT().DownloadFromTextFile(context.TODO(), gomock.Any()).Return(expErr)
 
 		bunrouter := bunrouter.New()
@@ -95,5 +100,28 @@ func TestStoreFromFileHandler(t *testing.T) {
 
 		//assert
 		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+}
+
+func TestFetchFiles(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	route := fmt.Sprint(_http.ApiPath, _http.V1Path, _http.FilesPath)
+
+	t.Run("if err occures in file service client, it throws 500 error", func(t *testing.T) {
+		//arrange
+		fileUsecase := _mocks.NewMockFileUsecase(ctrl)
+		expErr := sampleErr
+		fileUsecase.EXPECT().FetchFiles(context.TODO(), gomock.Any(), gomock.Any()).Return([]domain.File{}, expErr)
+		bunrouter := bunrouter.New()
+		req := httptest.NewRequest("GET", route, nil)
+		rec := httptest.NewRecorder()
+		_http.NewFileHTTPHandler(bunrouter, fileUsecase, maxFileSize)
+
+		//act
+		bunrouter.ServeHTTP(rec, req)
+
+		//assert
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+
 	})
 }

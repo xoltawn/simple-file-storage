@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/uptrace/bunrouter"
 	"github.com/xoltawn/simple-file-storage/domain"
@@ -30,7 +31,10 @@ func NewFileHTTPHandler(router *bunrouter.Router, fileUsecase domain.FileUsecase
 	router.WithGroup(ApiPath, func(apirouter *bunrouter.Group) {
 		apirouter.WithGroup(V1Path, func(apirouter *bunrouter.Group) {
 			apirouter.WithGroup(FilesPath, func(filesrouter *bunrouter.Group) {
+				// /api/v1/files/store_from_text
 				filesrouter.POST(fmt.Sprint(StoreFromFilePath), fileHander.storeFromFileHandler)
+				// /api/v1/files
+				filesrouter.GET("", fileHander.fetchFilesHandler)
 			})
 		})
 	})
@@ -76,4 +80,31 @@ func (h *fileHTTPHandler) storeFromFileHandler(w http.ResponseWriter, req bunrou
 
 	w.WriteHeader(http.StatusOK)
 	return bunrouter.JSON(w, "done")
+}
+
+func (h *fileHTTPHandler) fetchFilesHandler(w http.ResponseWriter, req bunrouter.Request) (err error) {
+	offset := 0
+	limit := 10
+
+	keys, ok := req.URL.Query()["offset"]
+	if ok && len(keys[0]) > 0 {
+		l, err := strconv.Atoi(keys[0])
+		if err == nil {
+			offset = l
+		}
+	}
+
+	keys, ok = req.URL.Query()["limit"]
+	if ok && len(keys[0]) > 0 {
+		l, err := strconv.Atoi(keys[0])
+		if err == nil {
+			limit = l
+		}
+	}
+	_, err = h.fileUsecase.FetchFiles(req.Context(), limit, offset)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
+	}
+	return
 }
