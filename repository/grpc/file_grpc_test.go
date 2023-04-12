@@ -2,6 +2,7 @@ package grpc_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -27,5 +28,21 @@ func TestDownloadFromTextFile(t *testing.T) {
 
 		//assert
 		assert.NoError(t, err)
+	})
+
+	t.Run("handle error from file service client", func(t *testing.T) {
+		//arrange
+		res := &_filepb.DownloadFromTextFileResponse{}
+		expErr := errors.New("An rpc error from file service client")
+		fileClient := _grpcmocks.NewMockFileServiceClient(ctrl)
+		fileClient.EXPECT().DownloadFromTextFile(context.TODO(), gomock.Any()).Return(res, expErr)
+
+		//act
+		repo := _grpc.NewFileGRPCRepository(fileClient)
+		err := repo.DownloadFromTextFile(context.TODO(), dummylinkBytes)
+
+		//assert
+		assert.Error(t, err)
+		assert.Equal(t, expErr, err)
 	})
 }
