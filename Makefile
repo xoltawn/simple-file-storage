@@ -9,3 +9,6 @@ test-go-all:
 
 pb-file:
 	@protoc repository/grpc/filepb/file.proto --go_out=. --go-grpc_opt=require_unimplemented_servers=false --go-grpc_out=.	
+
+lint: 
+	@golint ./...
