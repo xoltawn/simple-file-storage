@@ -19,3 +19,7 @@ func NewFileUsecase(fileRepo domain.FileRepository) *fileUsecase {
 func (fu *fileUsecase) DownloadFromTextFile(ctx context.Context, links []byte) (err error) {
 	return fu.fileRepo.DownloadFromTextFile(ctx, links)
 }
+
+func (fu *fileUsecase) FetchFiles(ctx context.Context, limit, offset int) (files []domain.File, err error) {
+	return fu.fileRepo.FetchFiles(ctx, limit, offset)
+}

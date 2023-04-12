@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/xoltawn/simple-file-storage/domain"
 	_mocks "github.com/xoltawn/simple-file-storage/domain/mocks"
 	"github.com/xoltawn/simple-file-storage/usecase"
 )
@@ -45,4 +46,27 @@ func TestDownloadFromTextFile(t *testing.T) {
 		//assert
 		assert.NoError(t, err)
 	})
+}
+
+func TestFetchFiles(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	t.Run("if err occurres, the err is returned with files being empty slice", func(t *testing.T) {
+		//arrange
+		limit := 10
+		offset := 0
+		expErr := sampleRPCErr
+		expFiles := []domain.File{}
+		fileRepo := _mocks.NewMockFileRepository(ctrl)
+
+		fileRepo.EXPECT().FetchFiles(context.TODO(), gomock.Any(), gomock.Any()).Return(expFiles, expErr)
+
+		//act
+		sut := usecase.NewFileUsecase(fileRepo)
+		actFiles, err := sut.FetchFiles(context.TODO(), limit, offset)
+
+		//assert
+		assert.Error(t, err)
+		assert.Equal(t, expFiles, actFiles)
+	})
+
 }
