@@ -116,4 +116,21 @@ func TestUploadFile(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, expFile, actFile)
 	})
+
+	t.Run("if no err occurres, it returns the file info", func(t *testing.T) {
+		//arrange
+		fileToUpload := []byte(gomock.Any().String())
+		expFile := domain.File{}
+		fileRepo := _mocks.NewMockFileRepository(ctrl)
+
+		fileRepo.EXPECT().UploadFile(context.TODO(), gomock.Any()).Return(expFile, nil)
+
+		//act
+		sut := usecase.NewFileUsecase(fileRepo)
+		actFile, err := sut.UploadFile(context.TODO(), fileToUpload)
+
+		//assert
+		assert.NoError(t, err)
+		assert.Equal(t, expFile, actFile)
+	})
 }
