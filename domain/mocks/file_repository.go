@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	domain "github.com/xoltawn/simple-file-storage/domain"
 )
 
 // MockFileRepository is a mock of FileRepository interface.
@@ -49,11 +50,12 @@ func (mr *MockFileRepositoryMockRecorder) DownloadFromTextFile(arg0, arg1 interf
 }
 
 // FetchFiles mocks base method.
-func (m *MockFileRepository) FetchFiles(arg0 context.Context, arg1, arg2 int) error {
+func (m *MockFileRepository) FetchFiles(arg0 context.Context, arg1, arg2 int) ([]domain.File, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchFiles", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].([]domain.File)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // FetchFiles indicates an expected call of FetchFiles.

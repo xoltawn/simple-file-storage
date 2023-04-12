@@ -9,7 +9,7 @@ message File {
     string original_url = 1;
     string local_name = 2;
     string file_extension = 3;
-    string file_size = 4;
+    int64 file_size = 4;
     string download_date = 5;
 }
 
@@ -26,7 +26,7 @@ message FetchFilesRequest {
 }
 
 message FetchFilesResponse {
-    repeated File file = 1;
+    repeated File files = 1;
 }
 
 
