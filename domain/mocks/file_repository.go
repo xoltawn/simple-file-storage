@@ -5,6 +5,7 @@
 package mock_domain
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,15 +35,15 @@ func (m *MockFileRepository) EXPECT() *MockFileRepositoryMockRecorder {
 }
 
 // DownloadFromTextFile mocks base method.
-func (m *MockFileRepository) DownloadFromTextFile(arg0 []byte) error {
+func (m *MockFileRepository) DownloadFromTextFile(arg0 context.Context, arg1 []byte) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DownloadFromTextFile", arg0)
+	ret := m.ctrl.Call(m, "DownloadFromTextFile", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DownloadFromTextFile indicates an expected call of DownloadFromTextFile.
-func (mr *MockFileRepositoryMockRecorder) DownloadFromTextFile(arg0 interface{}) *gomock.Call {
+func (mr *MockFileRepositoryMockRecorder) DownloadFromTextFile(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownloadFromTextFile", reflect.TypeOf((*MockFileRepository)(nil).DownloadFromTextFile), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownloadFromTextFile", reflect.TypeOf((*MockFileRepository)(nil).DownloadFromTextFile), arg0, arg1)
 }
