@@ -120,5 +120,21 @@ func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter
 		return bunrouter.JSON(w, "unaccepted content type")
 	}
 
+	err = req.ParseMultipartForm(h.maxFileSizeMB * 1024 * 1024)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return bunrouter.JSON(w, "error reading file")
+	}
+
+	_, _, err = req.Request.FormFile("text_file")
+	if err != nil {
+		if err.Error() == "multipart: NextPart: EOF" {
+			w.WriteHeader(http.StatusBadRequest)
+			return bunrouter.JSON(w, "text_file is not specified")
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
+	}
+
 	return
 }
