@@ -77,4 +77,23 @@ func TestStoreFromFileHandler(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	})
 
+	t.Run("if no err occures, it throws 200 error", func(t *testing.T) {
+		//arrange
+		fileUsecase := _mocks.NewMockFileUsecase(ctrl)
+		fileUsecase.EXPECT().DownloadFromTextFile(context.TODO(), gomock.Any()).Return(nil)
+
+		bunrouter := bunrouter.New()
+		rec := httptest.NewRecorder()
+		writer, req, err := _http.NewFileUploadRequest(route, nil, "text_file", "../../storage/sample-links.txt")
+		assert.NoError(t, err)
+		req.Header.Add("Content-Type", writer.FormDataContentType())
+
+		_http.NewFileHTTPHandler(bunrouter, fileUsecase, maxFileSize)
+
+		//act
+		bunrouter.ServeHTTP(rec, req)
+
+		//assert
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
 }
