@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package file;
+
+option go_package = "repository/grpc/filepb";
+
+message DownloadFromTextFileRequest {
+    bytes links = 1;
+}
+
+message DownloadFromTextFileResponse {
+}
+
+service FileService{
+    rpc DownloadFromTextFile(DownloadFromTextFileRequest) returns (DownloadFromTextFileResponse){};
+}
