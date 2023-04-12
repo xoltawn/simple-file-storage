@@ -31,4 +31,18 @@ func TestDownloadFromTextFile(t *testing.T) {
 		//assert
 		assert.Error(t, err)
 	})
+
+	t.Run("if no err occurres, nil will be returned for err", func(t *testing.T) {
+		//arrange
+		fileBytes := []byte(gomock.Any().String())
+		fileRepo := _mocks.NewMockFileRepository(ctrl)
+		fileRepo.EXPECT().DownloadFromTextFile(context.TODO(), fileBytes).Return(nil)
+
+		//act
+		sut := usecase.NewFileUsecase(fileRepo)
+		err := sut.DownloadFromTextFile(context.TODO(), fileBytes)
+
+		//assert
+		assert.NoError(t, err)
+	})
 }
