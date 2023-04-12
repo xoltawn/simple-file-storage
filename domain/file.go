@@ -20,7 +20,7 @@ type File struct {
 	CreatedAt string `json:"created_at"`
 }
 
-// FromGRPCFile converts data from *_filepb.File (used in grpc) and converts it to File
+// FromGRPCFile converts data from *_filepb.File (used in grpc) to File
 func (f *File) FromGRPCFile(in *_filepb.File) *File {
 	f.OriginalURL = in.OriginalUrl
 	f.LocalName = in.LocalName
