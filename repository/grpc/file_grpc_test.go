@@ -70,4 +70,43 @@ func TestFetchFiles(t *testing.T) {
 		assert.Error(t, err)
 		assert.Empty(t, res)
 	})
+
+	t.Run("if no error occurs in file client, FetchFiles should returns fetch Files", func(t *testing.T) {
+		//arrange
+		fcsFiles := []*_filepb.File{
+			{
+				OriginalUrl:   "OriginalUrl1",
+				LocalName:     "LocalName1",
+				FileExtension: "FileExtension1",
+				FileSize:      1,
+				DownloadDate:  "DownloadDate1",
+			},
+			{
+				OriginalUrl:   "OriginalUrl2",
+				LocalName:     "LocalName2",
+				FileExtension: "FileExtension2",
+				FileSize:      2,
+				DownloadDate:  "DownloadDate2",
+			},
+		}
+		fcsRes := &_filepb.FetchFilesResponse{
+			Files: fcsFiles,
+		}
+		fileClient := _grpcmocks.NewMockFileServiceClient(ctrl)
+		fileClient.EXPECT().FetchFiles(context.TODO(), gomock.Any()).Return(fcsRes, nil)
+
+		//act
+		sut := _grpc.NewFileGRPCRepository(fileClient)
+		res, err := sut.FetchFiles(context.TODO(), limit, offset)
+
+		//assert
+		assert.NoError(t, err)
+		for i, file := range res {
+			assert.Equal(t, file.OriginalUrl, fcsFiles[i].OriginalUrl)
+			assert.Equal(t, file.LocalName, fcsFiles[i].LocalName)
+			assert.Equal(t, file.FileExtension, fcsFiles[i].FileExtension)
+			assert.Equal(t, file.FileSize, fcsFiles[i].FileSize)
+			assert.Equal(t, file.DownloadDate, fcsFiles[i].DownloadDate)
+		}
+	})
 }
