@@ -8,17 +8,18 @@ import (
 )
 
 //go:generate mockgen --source=filepb/file_grpc.pb.go --destination=mocks/file_service_client.go . FileServiceClient
-type fileGRPC struct {
+type fileGRPCRepository struct {
 	fileServiceClient _filepb.FileServiceClient
 }
 
-func NewFileGRPCRepository(fsc _filepb.FileServiceClient) *fileGRPC {
-	return &fileGRPC{
+// NewFileGRPCRepository is the builder function for fileGRPC
+func NewFileGRPCRepository(fsc _filepb.FileServiceClient) *fileGRPCRepository {
+	return &fileGRPCRepository{
 		fileServiceClient: fsc,
 	}
 }
 
-func (f *fileGRPC) DownloadFromTextFile(ctx context.Context, links []byte) (err error) {
+func (f *fileGRPCRepository) DownloadFromTextFile(ctx context.Context, links []byte) (err error) {
 	req := &_filepb.DownloadFromTextFileRequest{
 		Links: links,
 	}
@@ -26,7 +27,7 @@ func (f *fileGRPC) DownloadFromTextFile(ctx context.Context, links []byte) (err 
 	return
 }
 
-func (f *fileGRPC) FetchFiles(ctx context.Context, limit, offset int) (files []domain.File, err error) {
+func (f *fileGRPCRepository) FetchFiles(ctx context.Context, limit, offset int) (files []domain.File, err error) {
 	req := &_filepb.FetchFilesRequest{
 		Limit:  10,
 		Offset: 0,
@@ -43,7 +44,7 @@ func (f *fileGRPC) FetchFiles(ctx context.Context, limit, offset int) (files []d
 	return
 }
 
-func (f *fileGRPC) UploadFile(ctx context.Context, file []byte) (uploadedFile domain.File, err error) {
+func (f *fileGRPCRepository) UploadFile(ctx context.Context, file []byte) (uploadedFile domain.File, err error) {
 	res, err := f.fileServiceClient.UploadFile(ctx, &_filepb.UploadFileRequest{
 		File: file,
 	})

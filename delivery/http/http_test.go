@@ -28,7 +28,7 @@ var (
 )
 
 func TestStoreFromFileHandler(t *testing.T) {
-	route := fmt.Sprint(_http.ApiPath, _http.V1Path, _http.FilesPath, _http.StoreFromFilePath)
+	route := fmt.Sprint(_http.APIPath, _http.V1Path, _http.FilesPath, _http.StoreFromFilePath)
 	contentType := fmt.Sprint("multipart/form-data; boundary=\"bounsdary\"")
 	ctrl := gomock.NewController(t)
 
@@ -107,7 +107,7 @@ func TestStoreFromFileHandler(t *testing.T) {
 
 func TestFetchFiles(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	route := fmt.Sprint(_http.ApiPath, _http.V1Path, _http.FilesPath)
+	route := fmt.Sprint(_http.APIPath, _http.V1Path, _http.FilesPath)
 
 	t.Run("if err occures in file service client, it throws 500 error", func(t *testing.T) {
 		//arrange
@@ -130,7 +130,7 @@ func TestFetchFiles(t *testing.T) {
 		//arrange
 		expFiles := []domain.File{
 			{
-				OriginalUrl:   "OriginalUrl1",
+				OriginalURL:   "OriginalUrl1",
 				LocalName:     "LocalName1",
 				FileExtension: "FileExtension1",
 				FileSize:      1,
@@ -160,7 +160,7 @@ func TestFetchFiles(t *testing.T) {
 }
 
 func TestUploadFile(t *testing.T) {
-	route := fmt.Sprint(_http.ApiPath, _http.V1Path, _http.FilesPath)
+	route := fmt.Sprint(_http.APIPath, _http.V1Path, _http.FilesPath)
 	defaultContentType := fmt.Sprint("multipart/form-data; boundary=\"bounsdary\"")
 	ctrl := gomock.NewController(t)
 
@@ -221,7 +221,7 @@ func TestUploadFile(t *testing.T) {
 	t.Run("if no err occures, it throws 200 error and responses back the uploaded file info", func(t *testing.T) {
 		//arrange
 		expFile := domain.File{
-			OriginalUrl:   "OriginalUrl1",
+			OriginalURL:   "OriginalUrl1",
 			LocalName:     "LocalName1",
 			FileExtension: "FileExtension1",
 			FileSize:      1,

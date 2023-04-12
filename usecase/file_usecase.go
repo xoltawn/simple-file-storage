@@ -10,6 +10,7 @@ type fileUsecase struct {
 	fileRepo domain.FileRepository
 }
 
+// NewFileUsecase is the builder function for fileUsecase
 func NewFileUsecase(fileRepo domain.FileRepository) *fileUsecase {
 	return &fileUsecase{
 		fileRepo: fileRepo,

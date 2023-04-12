@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// NewFileUploadRequest makes it easy for testing requests containg file uploads
 func NewFileUploadRequest(uri string, params map[string]string, paramName, path string) (*multipart.Writer, *http.Request, error) {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
@@ -50,6 +51,7 @@ func NewFileUploadRequest(uri string, params map[string]string, paramName, path 
 	return writer, req, err
 }
 
+// HasContentType checks if a request has the given mimetype
 func HasContentType(r *http.Request, mimetype string) bool {
 	contentType := r.Header.Get("Content-type")
 	if contentType == "" {

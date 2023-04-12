@@ -74,7 +74,7 @@ func TestFetchFiles(t *testing.T) {
 		//arrange
 		expFiles := []domain.File{
 			{
-				OriginalUrl:   "OriginalUrl1",
+				OriginalURL:   "OriginalUrl1",
 				LocalName:     "LocalName1",
 				FileExtension: "FileExtension1",
 				FileSize:      1,

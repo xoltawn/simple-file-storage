@@ -103,7 +103,7 @@ func TestFetchFiles(t *testing.T) {
 		//assert
 		assert.NoError(t, err)
 		for i, file := range res {
-			assert.Equal(t, file.OriginalUrl, fcsFiles[i].OriginalUrl)
+			assert.Equal(t, file.OriginalURL, fcsFiles[i].OriginalUrl)
 			assert.Equal(t, file.LocalName, fcsFiles[i].LocalName)
 			assert.Equal(t, file.FileExtension, fcsFiles[i].FileExtension)
 			assert.Equal(t, file.FileSize, fcsFiles[i].FileSize)

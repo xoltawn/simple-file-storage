@@ -12,9 +12,13 @@ import (
 )
 
 const (
-	ApiPath           = "/api"
-	V1Path            = "/v1"
-	FilesPath         = "/files"
+	//APIPath ...
+	APIPath = "/api"
+	//V1Path ...
+	V1Path = "/v1"
+	//FilesPath ...
+	FilesPath = "/files"
+	//StoreFromFilePath ...
 	StoreFromFilePath = "/store_from_text"
 )
 
@@ -23,12 +27,13 @@ type fileHTTPHandler struct {
 	maxFileSizeMB int64
 }
 
+// NewFileHTTPHandler is the builder for fileHTTPHandler
 func NewFileHTTPHandler(router *bunrouter.Router, fileUsecase domain.FileUsecase, maxFileSizeMB int64) {
 	fileHander := fileHTTPHandler{
 		fileUsecase:   fileUsecase,
 		maxFileSizeMB: maxFileSizeMB,
 	}
-	router.WithGroup(ApiPath, func(apirouter *bunrouter.Group) {
+	router.WithGroup(APIPath, func(apirouter *bunrouter.Group) {
 		apirouter.WithGroup(V1Path, func(apirouter *bunrouter.Group) {
 			apirouter.WithGroup(FilesPath, func(filesrouter *bunrouter.Group) {
 				// /api/v1/files/store_from_text
