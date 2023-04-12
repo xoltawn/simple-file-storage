@@ -43,5 +43,5 @@ type FileRepository interface {
 type FileUsecase interface {
 	DownloadFromTextFile(ctx context.Context, links []byte) (err error)
 	FetchFiles(ctx context.Context, limit, offset int) (files []File, err error)
-	// UploadFile(ctx context.Context, file []byte) (uploadedFile File, err error)
+	UploadFile(ctx context.Context, file []byte) (uploadedFile File, err error)
 }

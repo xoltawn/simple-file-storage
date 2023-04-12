@@ -23,3 +23,7 @@ func (fu *fileUsecase) DownloadFromTextFile(ctx context.Context, links []byte) (
 func (fu *fileUsecase) FetchFiles(ctx context.Context, limit, offset int) (files []domain.File, err error) {
 	return fu.fileRepo.FetchFiles(ctx, limit, offset)
 }
+
+func (fu *fileUsecase) UploadFile(ctx context.Context, file []byte) (uploadedFile domain.File, err error) {
+	return fu.fileRepo.UploadFile(ctx, file)
+}

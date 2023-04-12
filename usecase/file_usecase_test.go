@@ -95,3 +95,25 @@ func TestFetchFiles(t *testing.T) {
 	})
 
 }
+
+func TestUploadFile(t *testing.T) {
+	ctrl := gomock.NewController(t)
+
+	t.Run("if err occurres, the err is returned with file being empty", func(t *testing.T) {
+		//arrange
+		fileToUpload := []byte(gomock.Any().String())
+		expErr := sampleRPCErr
+		expFile := domain.File{}
+		fileRepo := _mocks.NewMockFileRepository(ctrl)
+
+		fileRepo.EXPECT().UploadFile(context.TODO(), gomock.Any()).Return(expFile, expErr)
+
+		//act
+		sut := usecase.NewFileUsecase(fileRepo)
+		actFile, err := sut.UploadFile(context.TODO(), fileToUpload)
+
+		//assert
+		assert.Error(t, err)
+		assert.Equal(t, expFile, actFile)
+	})
+}
