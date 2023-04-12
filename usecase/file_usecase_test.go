@@ -50,10 +50,11 @@ func TestDownloadFromTextFile(t *testing.T) {
 
 func TestFetchFiles(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	limit := 10
+	offset := 0
+
 	t.Run("if err occurres, the err is returned with files being empty slice", func(t *testing.T) {
 		//arrange
-		limit := 10
-		offset := 0
 		expErr := sampleRPCErr
 		expFiles := []domain.File{}
 		fileRepo := _mocks.NewMockFileRepository(ctrl)
@@ -66,6 +67,30 @@ func TestFetchFiles(t *testing.T) {
 
 		//assert
 		assert.Error(t, err)
+		assert.Equal(t, expFiles, actFiles)
+	})
+
+	t.Run("if no err occurres, files will be returned with err being nil", func(t *testing.T) {
+		//arrange
+		expFiles := []domain.File{
+			{
+				OriginalUrl:   "OriginalUrl1",
+				LocalName:     "LocalName1",
+				FileExtension: "FileExtension1",
+				FileSize:      1,
+				CreatedAt:     "CreatedAt1",
+			},
+		}
+		fileRepo := _mocks.NewMockFileRepository(ctrl)
+
+		fileRepo.EXPECT().FetchFiles(context.TODO(), gomock.Any(), gomock.Any()).Return(expFiles, nil)
+
+		//act
+		sut := usecase.NewFileUsecase(fileRepo)
+		actFiles, err := sut.FetchFiles(context.TODO(), limit, offset)
+
+		//assert
+		assert.NoError(t, err)
 		assert.Equal(t, expFiles, actFiles)
 	})
 
