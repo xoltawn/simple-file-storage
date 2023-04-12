@@ -36,3 +36,12 @@ type FileRepository interface {
 	//UploadFile takes the file to be uploaded and stores the file
 	UploadFile(ctx context.Context, file []byte) (uploadedFile File, err error)
 }
+
+// FileUsecase
+//
+//go:generate mockgen --destination=mocks/file_repository.go . FileUsecase
+type FileUsecase interface {
+	DownloadFromTextFile(ctx context.Context, links []byte) (err error)
+	// FetchFiles(ctx context.Context, limit, offset int) (files []File, err error)
+	// UploadFile(ctx context.Context, file []byte) (uploadedFile File, err error)
+}
