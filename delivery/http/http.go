@@ -101,10 +101,12 @@ func (h *fileHTTPHandler) fetchFilesHandler(w http.ResponseWriter, req bunrouter
 			limit = l
 		}
 	}
-	_, err = h.fileUsecase.FetchFiles(req.Context(), limit, offset)
+	files, err := h.fileUsecase.FetchFiles(req.Context(), limit, offset)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return bunrouter.JSON(w, "internal server error")
 	}
-	return
+
+	w.WriteHeader(http.StatusOK)
+	return bunrouter.JSON(w, files)
 }

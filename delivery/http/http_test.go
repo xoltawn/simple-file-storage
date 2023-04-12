@@ -2,8 +2,10 @@ package http_test
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -122,6 +124,37 @@ func TestFetchFiles(t *testing.T) {
 
 		//assert
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	})
 
+	t.Run("if no err occures in file service client, it throws 200 code with files", func(t *testing.T) {
+		//arrange
+		expFiles := []domain.File{
+			{
+				OriginalUrl:   "OriginalUrl1",
+				LocalName:     "LocalName1",
+				FileExtension: "FileExtension1",
+				FileSize:      1,
+				CreatedAt:     "CreatedAt1",
+			},
+		}
+		fileUsecase := _mocks.NewMockFileUsecase(ctrl)
+		fileUsecase.EXPECT().FetchFiles(context.TODO(), gomock.Any(), gomock.Any()).Return(expFiles, nil)
+
+		bunrouter := bunrouter.New()
+		req := httptest.NewRequest("GET", route, nil)
+		rec := httptest.NewRecorder()
+		rec.Header().Set("Content-Type", "application/json")
+		_http.NewFileHTTPHandler(bunrouter, fileUsecase, maxFileSize)
+
+		//act
+		bunrouter.ServeHTTP(rec, req)
+
+		//assert
+		assert.Equal(t, http.StatusOK, rec.Code)
+		wantResp, err := json.Marshal(expFiles)
+		if err != nil {
+			log.Fatal(err)
+		}
+		assert.Contains(t, rec.Body.String(), string(wantResp))
 	})
 }
