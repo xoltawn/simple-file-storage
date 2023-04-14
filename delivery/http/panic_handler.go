@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"runtime"
@@ -20,8 +21,8 @@ func (h PanicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			// Uncomment to exit instead of recovering.
 			// os.Exit(1)
-
-			http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+			log.Println(err)
+			http.Error(w, "Internal error", http.StatusInternalServerError)
 		}
 	}()
 
