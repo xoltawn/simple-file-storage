@@ -29,8 +29,8 @@ func (f *fileGRPCRepository) DownloadFromTextFile(ctx context.Context, links []b
 
 func (f *fileGRPCRepository) FetchFiles(ctx context.Context, limit, offset int) (files []domain.File, err error) {
 	req := &_filepb.FetchFilesRequest{
-		Limit:  10,
-		Offset: 0,
+		Limit:  int32(limit),
+		Offset: int32(offset),
 	}
 	res, err := f.fileServiceClient.FetchFiles(ctx, req)
 	if err != nil {
