@@ -1,5 +1,8 @@
-.PHONY: go-gen pb-file test-go-all
+.PHONY:run go-gen pb-file test-go-all
 GO := $(shell which go)
+
+run: 
+	./run.sh
 
 go-gen: 
 	@$(GO) generate ./...

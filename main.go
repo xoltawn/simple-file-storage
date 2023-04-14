@@ -28,6 +28,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	state := cc.GetState()
+	log.Println(state.String())
 	log.Println("Connected to the File service...")
 
 	client := filepb.NewFileServiceClient(cc)

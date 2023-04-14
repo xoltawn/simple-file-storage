@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  main-app:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks: 
+      - simple-file-storage
+    volumes:
+      - '.env:/.env'
+    ports:
+      - 8080:8080
+
+networks:
+  simple-file-storage:
+    driver: bridge
+    name: simple-file-storage

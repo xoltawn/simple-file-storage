@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -110,6 +111,7 @@ func (h *fileHTTPHandler) fetchFilesHandler(w http.ResponseWriter, req bunrouter
 	}
 	files, err := h.fileUsecase.FetchFiles(req.Context(), limit, offset)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return bunrouter.JSON(w, "internal server error")
 	}
