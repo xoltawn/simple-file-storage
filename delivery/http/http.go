@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/uptrace/bunrouter"
 	"github.com/xoltawn/simple-file-storage/domain"
@@ -50,29 +52,42 @@ func NewFileHTTPHandler(router *bunrouter.Router, fileUsecase domain.FileUsecase
 func (h *fileHTTPHandler) storeFromFileHandler(w http.ResponseWriter, req bunrouter.Request) (err error) {
 	//check content type
 	if ok := HasContentType(req.Request, "multipart/form-data"); !ok {
-		panic(err)
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return bunrouter.JSON(w, "unaccepted content type")
 	}
 
 	//check if the text file containing links is sent and get file content
 	err = req.ParseMultipartForm(h.maxFileSizeMB * 1024 * 1024)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return bunrouter.JSON(w, "error reading file")
 	}
 
 	multipartFile, _, err := req.Request.FormFile("text_file")
 	if err != nil {
-		panic(err)
+		if err.Error() == "multipart: NextPart: EOF" {
+			w.WriteHeader(http.StatusBadRequest)
+			return bunrouter.JSON(w, "text_file is not specified")
+		}
+		if strings.Contains(err.Error(), "no such file") {
+			w.WriteHeader(http.StatusBadRequest)
+			return bunrouter.JSON(w, "text_file is not specified")
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
 	}
 	defer multipartFile.Close()
 
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, multipartFile); err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
 	}
 
 	err = h.fileUsecase.DownloadFromTextFile(req.Context(), buf.Bytes())
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -100,7 +115,9 @@ func (h *fileHTTPHandler) fetchFilesHandler(w http.ResponseWriter, req bunrouter
 	}
 	files, err := h.fileUsecase.FetchFiles(req.Context(), limit, offset)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -110,28 +127,37 @@ func (h *fileHTTPHandler) fetchFilesHandler(w http.ResponseWriter, req bunrouter
 func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter.Request) (err error) {
 	//check content type
 	if ok := HasContentType(req.Request, "multipart/form-data"); !ok {
-		panic(err)
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return bunrouter.JSON(w, "unaccepted content type")
 	}
 
 	err = req.ParseMultipartForm(h.maxFileSizeMB * 1024 * 1024)
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return bunrouter.JSON(w, "error reading file")
 	}
 
 	multipartFile, _, err := req.Request.FormFile("file")
 	if err != nil {
-		panic(err)
+		if err.Error() == "multipart: NextPart: EOF" {
+			w.WriteHeader(http.StatusBadRequest)
+			return bunrouter.JSON(w, "text_file is not specified")
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
 	}
 	defer multipartFile.Close()
 
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, multipartFile); err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
 	}
 
 	uploadedFile, err := h.fileUsecase.UploadFile(req.Context(), buf.Bytes())
 	if err != nil {
-		panic(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return bunrouter.JSON(w, "internal server error")
 	}
 
 	w.WriteHeader(http.StatusOK)

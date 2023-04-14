@@ -165,7 +165,6 @@ func TestUploadFile(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
 	t.Run("if request content type is not multipart, it throws 415 error", func(t *testing.T) {
-		//arrange
 		bunrouter := bunrouter.New()
 		rec := httptest.NewRecorder()
 		_, req, err := _http.NewFileUploadRequest(route, nil, "", "")
