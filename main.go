@@ -16,6 +16,7 @@ import (
 	"github.com/xoltawn/simple-file-storage/repository/grpc/filepb"
 	"github.com/xoltawn/simple-file-storage/usecase"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 )
 
 func main() {
@@ -30,8 +31,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	state := cc.GetState()
-	log.Println(state.String())
+	fileServiceCtx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	isFileServerConnected := cc.WaitForStateChange(fileServiceCtx, connectivity.Ready)
+	if !isFileServerConnected {
+		log.Fatal("File server is not ready")
+	}
+
 	log.Println("Connected to the File service...")
 
 	client := filepb.NewFileServiceClient(cc)
