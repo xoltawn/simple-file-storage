@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/uptrace/bunrouter"
 	"github.com/xoltawn/simple-file-storage/domain"
@@ -64,15 +65,19 @@ func (h *fileHTTPHandler) storeFromFileHandler(w http.ResponseWriter, req bunrou
 	}
 
 	multipartFile, _, err := req.Request.FormFile("text_file")
-	defer multipartFile.Close()
 	if err != nil {
 		if err.Error() == "multipart: NextPart: EOF" {
+			w.WriteHeader(http.StatusBadRequest)
+			return bunrouter.JSON(w, "text_file is not specified")
+		}
+		if strings.Contains(err.Error(), "no such file") {
 			w.WriteHeader(http.StatusBadRequest)
 			return bunrouter.JSON(w, "text_file is not specified")
 		}
 		w.WriteHeader(http.StatusInternalServerError)
 		return bunrouter.JSON(w, "internal server error")
 	}
+	defer multipartFile.Close()
 
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, multipartFile); err != nil {

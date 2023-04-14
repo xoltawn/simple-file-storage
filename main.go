@@ -19,6 +19,7 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.Llongfile)
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -44,12 +45,14 @@ func main() {
 	}
 
 	router := bunrouter.New()
+	handler := http.Handler(router)
+	handler = _http.PanicHandler{Next: handler}
 	_http.NewFileHTTPHandler(router, fileUsecase, int64(maxUploadSize))
 
 	listenAddr := os.Getenv("SERVER_ADDRESS")
 	server := &http.Server{
 		Addr:         listenAddr,
-		Handler:      router,
+		Handler:      handler,
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
