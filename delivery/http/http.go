@@ -50,7 +50,6 @@ func NewFileHTTPHandler(router *bunrouter.Router, fileUsecase domain.FileUsecase
 }
 
 func (h *fileHTTPHandler) storeFromFileHandler(w http.ResponseWriter, req bunrouter.Request) (err error) {
-
 	//check content type
 	if ok := HasContentType(req.Request, "multipart/form-data"); !ok {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
@@ -139,7 +138,6 @@ func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter
 	}
 
 	multipartFile, _, err := req.Request.FormFile("file")
-	defer multipartFile.Close()
 	if err != nil {
 		if err.Error() == "multipart: NextPart: EOF" {
 			w.WriteHeader(http.StatusBadRequest)
@@ -148,6 +146,7 @@ func (h *fileHTTPHandler) uploadFileHandler(w http.ResponseWriter, req bunrouter
 		w.WriteHeader(http.StatusInternalServerError)
 		return bunrouter.JSON(w, "internal server error")
 	}
+	defer multipartFile.Close()
 
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, multipartFile); err != nil {
