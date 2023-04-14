@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/xoltawn/simple-file-storage/domain"
 	_filepb "github.com/xoltawn/simple-file-storage/repository/grpc/filepb"
@@ -10,12 +11,14 @@ import (
 //go:generate mockgen --source=filepb/file_grpc.pb.go --destination=mocks/file_service_client.go . FileServiceClient
 type fileGRPCRepository struct {
 	fileServiceClient _filepb.FileServiceClient
+	gateWayAddress    string
 }
 
 // NewFileGRPCRepository is the builder function for fileGRPC
-func NewFileGRPCRepository(fsc _filepb.FileServiceClient) *fileGRPCRepository {
+func NewFileGRPCRepository(fsc _filepb.FileServiceClient, gateWayAddress string) *fileGRPCRepository {
 	return &fileGRPCRepository{
 		fileServiceClient: fsc,
+		gateWayAddress:    gateWayAddress,
 	}
 }
 
@@ -37,9 +40,10 @@ func (f *fileGRPCRepository) FetchFiles(ctx context.Context, limit, offset int) 
 		return
 	}
 
-	for _, f := range res.Files {
+	for _, file := range res.Files {
 		resFile := &domain.File{}
-		files = append(files, *resFile.FromGRPCFile(f))
+		resFile.URL = fmt.Sprint(f.gateWayAddress, "/", file.FileLocation, "/", file.LocalName, ".", file.FileExtension)
+		files = append(files, *resFile.FromGRPCFile(file))
 	}
 	return
 }

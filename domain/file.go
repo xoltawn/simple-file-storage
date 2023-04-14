@@ -10,7 +10,9 @@ import (
 type File struct {
 	//OriginalUrl indicates the url from which the file was downloaded(used when file is downloaded from a link)
 	OriginalURL string `json:"original_url"`
-	//LocalName is the name given on storing
+	//URL is the url to download the file
+	URL string `json:"url"`
+
 	LocalName string `json:"local_name"`
 	//FileExtension ...
 	FileExtension string `json:"file_extension"`

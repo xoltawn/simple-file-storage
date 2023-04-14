@@ -28,7 +28,7 @@ func TestDownloadFromTextFile(t *testing.T) {
 		fileClient.EXPECT().DownloadFromTextFile(context.TODO(), gomock.Any()).Return(res, nil)
 
 		//act
-		repo := _grpc.NewFileGRPCRepository(fileClient)
+		repo := _grpc.NewFileGRPCRepository(fileClient, gomock.Any().String())
 		err := repo.DownloadFromTextFile(context.TODO(), dummylinkBytes)
 
 		//assert
@@ -43,7 +43,7 @@ func TestDownloadFromTextFile(t *testing.T) {
 		fileClient.EXPECT().DownloadFromTextFile(context.TODO(), gomock.Any()).Return(res, expErr)
 
 		//act
-		repo := _grpc.NewFileGRPCRepository(fileClient)
+		repo := _grpc.NewFileGRPCRepository(fileClient, gomock.Any().String())
 		err := repo.DownloadFromTextFile(context.TODO(), dummylinkBytes)
 
 		//assert
@@ -64,7 +64,7 @@ func TestFetchFiles(t *testing.T) {
 		fileClient.EXPECT().FetchFiles(context.TODO(), gomock.Any()).Return(fcsRes, expErr)
 
 		//act
-		sut := _grpc.NewFileGRPCRepository(fileClient)
+		sut := _grpc.NewFileGRPCRepository(fileClient, gomock.Any().String())
 		res, err := sut.FetchFiles(context.TODO(), limit, offset)
 
 		//assert
@@ -97,7 +97,7 @@ func TestFetchFiles(t *testing.T) {
 		fileClient.EXPECT().FetchFiles(context.TODO(), gomock.Any()).Return(fcsRes, nil)
 
 		//act
-		sut := _grpc.NewFileGRPCRepository(fileClient)
+		sut := _grpc.NewFileGRPCRepository(fileClient, gomock.Any().String())
 		res, err := sut.FetchFiles(context.TODO(), limit, offset)
 
 		//assert
@@ -122,7 +122,7 @@ func TestUploadFile(t *testing.T) {
 		fileClient.EXPECT().UploadFile(context.TODO(), gomock.Any()).Return(fscRes, expErr)
 
 		//act
-		sut := _grpc.NewFileGRPCRepository(fileClient)
+		sut := _grpc.NewFileGRPCRepository(fileClient, gomock.Any().String())
 		uploadedFile, err := sut.UploadFile(context.TODO(), []byte(gomock.Any().String()))
 
 		//assert
@@ -148,7 +148,7 @@ func TestUploadFile(t *testing.T) {
 		fileClient.EXPECT().UploadFile(context.TODO(), fscReq).Return(fscRes, nil)
 
 		//act
-		sut := _grpc.NewFileGRPCRepository(fileClient)
+		sut := _grpc.NewFileGRPCRepository(fileClient, gomock.Any().String())
 		uploadedFile, err := sut.UploadFile(context.TODO(), fileBytes)
 
 		//assert

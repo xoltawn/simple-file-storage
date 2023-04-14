@@ -42,8 +42,9 @@ func main() {
 	log.Println("Connected to the File service...")
 
 	client := filepb.NewFileServiceClient(cc)
+	listenAddr := os.Getenv("SERVER_ADDRESS")
 
-	fileRepo := _grpc.NewFileGRPCRepository(client)
+	fileRepo := _grpc.NewFileGRPCRepository(client, os.Getenv("API_GATEWAY_ADDRESS"))
 	fileUsecase := usecase.NewFileUsecase(fileRepo)
 
 	maxUploadSize, err := strconv.Atoi(os.Getenv("MAX_UPLOAD_SIZE"))
@@ -56,7 +57,6 @@ func main() {
 	handler = _http.PanicHandler{Next: handler}
 	_http.NewFileHTTPHandler(router, fileUsecase, int64(maxUploadSize))
 
-	listenAddr := os.Getenv("SERVER_ADDRESS")
 	server := &http.Server{
 		Addr:         listenAddr,
 		Handler:      handler,
